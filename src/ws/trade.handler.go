@@ -3,10 +3,10 @@ package ws
 import (
 	"encoding/json"
 	"exex-chart/src/context"
-	"log"
 	"sync"
 
 	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 var exists = struct{}{}
@@ -26,7 +26,7 @@ func TradeHandler(client *Client, message SubMessage) {
 
 func SendTradeUpdate() {
 	for {
-		msg := <-context.BroadcastTrade
+		msg := <-context.BroadcastTradeWS
 
 		var update TradeOrderList
 		update = make(TradeOrderList)
@@ -41,7 +41,7 @@ func SendTradeUpdate() {
 
 		jsonData, err := json.Marshal(message)
 		if err != nil {
-			log.Printf("Error serializing message trade chanel: %v", err)
+			log.Error("Error serializing message trade chanel", err)
 			continue
 		}
 

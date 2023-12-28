@@ -32,5 +32,57 @@
         "MANAUSDT_PERP",
         "UNIUSDT_PERP",
         "XRPUSDT_PERP"
+    ],
+    "candle": {
+        "periods": [
+            "S15",
+            "M1",
+            "M5",
+            "M15"
+        ]
+    },
+    "rsi": [
+        {
+            "period": 14,
+            "interval": "M1",
+            "movingAverage": "smma",
+            "fillBlanks": true,
+            "storage": true
+        },
+        {
+            "period": 14,
+            "interval": "M5",
+            "movingAverage": "smma",
+            "fillBlanks": true,
+            "storage": true
+        },
+        {
+            "period": 14,
+            "interval": "M15",
+            "movingAverage": "smma",
+            "fillBlanks": true,
+            "storage": true
+        },
+        {
+            "period": 14,
+            "interval": "M30",
+            "movingAverage": "smma",
+            "fillBlanks": true,
+            "storage": true
+        },
+        {
+            "period": 14,
+            "interval": "H1",
+            "movingAverage": "smma",
+            "fillBlanks": true,
+            "storage": true
+        },
+        {
+            "period": 14,
+            "interval": "H4",
+            "movingAverage": "smma",
+            "fillBlanks": true,
+            "storage": true
+        }
     ]
 }

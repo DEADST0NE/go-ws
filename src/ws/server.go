@@ -2,11 +2,11 @@ package ws
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 func WsServer() {
@@ -15,29 +15,32 @@ func WsServer() {
 }
 
 var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
+	CheckOrigin:     func(r *http.Request) bool { return true },
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	ws, err := upgrader.Upgrade(w, r, nil)
 
-	log.Print("Connect new user")
+	log.Info("Client Connected")
 
 	if err != nil {
 		log.Println("Error WS SERVER connect:", err)
 		return
 	}
 
-	defer conn.Close()
+	go reader(ws)
+}
 
+func reader(conn *websocket.Conn) {
+	defer conn.Close()
 	client := newClient(conn)
 
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Error WS SERVER read message:", err)
+			log.Info("Error WS SERVER read message:", err)
 			TradeDropSubscriber(&client)
 			break
 		}
@@ -46,7 +49,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		err = json.Unmarshal(msg, &message)
 
 		if err != nil {
-			log.Println("Error WS SERVER parse message:", err)
+			log.Info("Error WS SERVER parse message:", err)
 			SendMessage(conn, "Invalid message")
 			continue
 		}

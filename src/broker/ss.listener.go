@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"exex-chart/src/config"
 	"exex-chart/src/context"
-	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/websocket"
 )
@@ -21,7 +21,7 @@ func ssConnectToServer() (*websocket.Conn, error) {
 		Path:   config.Broker.Ss.Path,
 		Host:   config.Broker.Ss.Host,
 	}
-	log.Printf("Сonnecting to SS ws %s", url.String())
+	log.Info("Сonnecting to SS ws url:", url.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 
@@ -57,7 +57,7 @@ func ssListenAndServe(c *websocket.Conn) {
 		_, msg, err := c.ReadMessage()
 
 		if err != nil {
-			log.Printf("Error read SS ws: %v", err)
+			log.Error("Error read SS ws:", err)
 			c.Close()
 			return
 		}
@@ -66,7 +66,7 @@ func ssListenAndServe(c *websocket.Conn) {
 		err = json.Unmarshal(msg, &message)
 
 		if err != nil {
-			fmt.Printf("Error parse message SS ws: %v\n", err)
+			log.Error("Error parse message SS ws:", err)
 		} else {
 
 			if message.Update != nil {
@@ -81,7 +81,8 @@ func ssListenAndServe(c *websocket.Conn) {
 							Symbol:    symbol,
 						}
 
-						context.BroadcastTrade <- &msg
+						context.BroadcastTradeWS <- &msg
+						context.BroadcastTradeCandle <- &msg
 					}
 				}
 			}
@@ -96,19 +97,19 @@ func SSListener() {
 	for {
 		c, err := ssConnectToServer()
 		if err != nil {
-			log.Printf("Error connect SS ws: %v", err)
+			log.Error("Error connect SS ws:", err)
 		} else {
 			ssListenAndServe(c)
 			attempts = 0
 		}
 
 		if attempts++; attempts >= maxAttempts {
-			fmt.Fprintf(os.Stderr, "Maximum number of connection SS ws attempts exceeded: %v\n", err)
+			log.Error("Maximum number of connection SS ws attempts exceeded:", err)
 			os.Exit(1)
 			break
 		}
 
-		log.Printf("Attempting to reconnect after 5 seconds...")
+		log.Info("Attempting to reconnect after 5 seconds...:")
 		time.Sleep(5 * time.Second)
 	}
 }

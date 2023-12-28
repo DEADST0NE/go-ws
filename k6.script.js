@@ -2,7 +2,7 @@ import ws from 'k6/ws';
 import {check} from 'k6';
 
 export const options = {
-  vus: 3000,
+  vus: 3100,
   duration: '30s',
   noVUConnectionReuse: true,
 };

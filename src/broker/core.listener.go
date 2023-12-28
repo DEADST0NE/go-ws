@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"exex-chart/src/config"
 	"exex-chart/src/context"
-	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"strconv"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/websocket"
 )
@@ -22,7 +22,7 @@ func coreConnectToServer() (*websocket.Conn, error) {
 		Path:   config.Broker.Core.Path,
 		Host:   config.Broker.Core.Host,
 	}
-	log.Printf("Сonnecting to CORE ws %s", url.String())
+	log.Info("Сonnecting to CORE ws url:", url.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 
@@ -59,7 +59,7 @@ func coreParseTrade(data CoreMsgTrades) (*context.TradeChanel, error) {
 	t, err := time.Parse(layout, data.Timestamp)
 
 	if err != nil {
-		log.Printf("Error parsing timestamp: %v", err)
+		log.Error("Error parsing timestamp:", err)
 		return nil, err
 	}
 
@@ -68,7 +68,7 @@ func coreParseTrade(data CoreMsgTrades) (*context.TradeChanel, error) {
 	id, err := strconv.ParseInt(data.Id, 10, 64)
 
 	if err != nil {
-		log.Printf("Error parsing ID: %v", err)
+		log.Error("Error parsing ID:", err)
 		return nil, err
 	}
 
@@ -92,7 +92,7 @@ func coreListenAndServe(c *websocket.Conn) {
 		_, msg, err := c.ReadMessage()
 
 		if err != nil {
-			log.Printf("Error read CORE ws: %v", err)
+			log.Error("Error read CORE ws:", err)
 			c.Close()
 			return
 		}
@@ -101,7 +101,7 @@ func coreListenAndServe(c *websocket.Conn) {
 		err = json.Unmarshal(msg, &message)
 
 		if err != nil {
-			fmt.Printf("Error parse message CORE ws: %v\n", err)
+			log.Error("Error parse message CORE ws:", err)
 		} else {
 			if message.requestId == "" {
 				continue
@@ -110,11 +110,12 @@ func coreListenAndServe(c *websocket.Conn) {
 			msg, err := coreParseTrade(message)
 
 			if err != nil {
-				fmt.Printf("Error parse CoreTrades to TradeChanel ws: %v\n", err)
+				log.Error("Error parse CoreTrades to TradeChanel ws:", err)
 				continue
 			}
 
-			context.BroadcastTrade <- msg
+			context.BroadcastTradeWS <- msg
+			context.BroadcastTradeCandle <- msg
 		}
 	}
 }
@@ -126,19 +127,19 @@ func CoreListener() {
 	for {
 		c, err := coreConnectToServer()
 		if err != nil {
-			log.Printf("Error connect CORE ws: %v", err)
+			log.Error("Error connect CORE ws:", err)
 		} else {
 			coreListenAndServe(c)
 			attempts = 0
 		}
 
 		if attempts++; attempts >= maxAttempts {
-			fmt.Fprintf(os.Stderr, "Maximum number of connection CORE ws attempts exceeded: %v\n", err)
+			log.Error("Maximum number of connection CORE ws attempts exceeded:", err)
 			os.Exit(1)
 			break
 		}
 
-		log.Printf("Attempting to reconnect after 5 seconds...")
+		log.Info("Attempting to reconnect after 5 seconds...")
 		time.Sleep(5 * time.Second)
 	}
 }

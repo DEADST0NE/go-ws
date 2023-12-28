@@ -18,7 +18,21 @@ type Broker struct {
 	Core BrokerTransportCore `json:"core"`
 }
 
+type Candle struct {
+	Periods []string `json:"periods"`
+}
+
+type Rsi struct {
+	Period        int8   `json:"period"`
+	Interval      string `json:"interval"`
+	MovingAverage string `json:"movingAverage"`
+	FillBlanks    bool   `json:"fillBlanks"`
+	Storage       bool   `json:"storage"`
+}
+
 type Config struct {
 	Broker  Broker   `json:"broker"`
 	Symbols []string `json:"symbols"`
+	Candle  Candle   `json:"candle"`
+	Rsi     []Rsi    `json:"rsi"`
 }
