@@ -2,7 +2,7 @@ import ws from 'k6/ws';
 import {check} from 'k6';
 
 export const options = {
-  vus: 3100,
+  vus: 10100,
   duration: '30s',
   noVUConnectionReuse: true,
 };
@@ -18,6 +18,11 @@ export default function() {
       socket.send(
         JSON.stringify(
           {"method": "subscribe", "ch": "trades", "params": {"symbols": ["BTCUSDT_PERP"], "limit": 50}, "id": 100001}
+        )
+      );
+      socket.send(
+        JSON.stringify(
+          {"method": "subscribe", "ch": "rsi", "params": {"symbols": ["BTCUSDT_PERP"], "limit": 50}, "id": 100001}
         )
       );
     });

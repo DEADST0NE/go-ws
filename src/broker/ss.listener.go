@@ -2,7 +2,6 @@ package broker
 
 import (
 	"encoding/json"
-	"exex-chart/src/config"
 	"exex-chart/src/context"
 	"net/url"
 	"os"
@@ -14,12 +13,10 @@ import (
 )
 
 func ssConnectToServer() (*websocket.Conn, error) {
-	config := config.GetConfig()
-
 	url := url.URL{
-		Scheme: config.Broker.Ss.Scheme,
-		Path:   config.Broker.Ss.Path,
-		Host:   config.Broker.Ss.Host,
+		Scheme: context.Config.Broker.Ss.Scheme,
+		Path:   context.Config.Broker.Ss.Path,
+		Host:   context.Config.Broker.Ss.Host,
 	}
 	log.Info("Сonnecting to SS ws url:", url.String())
 
@@ -33,7 +30,7 @@ func ssConnectToServer() (*websocket.Conn, error) {
 		Method: "subscribe",
 		Ch:     "trades",
 		Params: SsParams{
-			Symbols: config.Symbols,
+			Symbols: context.Config.Symbols,
 		},
 	}
 

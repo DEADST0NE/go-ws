@@ -9,16 +9,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var exists = struct{}{}
-var subscribersMutex sync.Mutex
-var subscribers = make(map[string]map[*Client]struct{})
+var tradeExists = struct{}{}
+var tradeSubscribersMutex sync.Mutex
+var tradeSubscribers = make(map[string]map[*Client]struct{})
+
+var historyTrade = make(map[string][]context.TradeChanel)
 
 func TradeHandler(client *Client, message SubMessage) {
 	switch message.Method {
 	case "subscribe":
-		subscribe(client, message)
+		tradeSubscribe(client, message)
+		sendSnapshot(client, message.Params.Symbols, message.Params.Limit)
 	case "unsubscribe":
-		unsubscribe(client, message)
+		tradeUnsubscribe(client, message)
 	default:
 		SendMessage(client.Conn, "Method not implemented")
 	}
@@ -46,45 +49,121 @@ func SendTradeUpdate() {
 		}
 
 		if msg != nil {
-			clients := subscribers[msg.Symbol]
+			saveTrade(msg)
+			clients := tradeSubscribers[msg.Symbol]
 
 			for client := range clients {
+				client.Mutex.Lock()
 				client.Conn.WriteMessage(websocket.TextMessage, jsonData)
+				client.Mutex.Unlock()
 			}
 		}
 	}
 }
 
-func subscribe(client *Client, message SubMessage) {
-	subscribersMutex.Lock()
-	defer subscribersMutex.Unlock()
+func saveTrade(msg *context.TradeChanel) {
+	history, isExist := historyTrade[msg.Symbol]
 
-	for _, symbol := range message.Params.Symbols {
-		if _, ok := subscribers[symbol]; !ok {
-			subscribers[symbol] = make(map[*Client]struct{})
-		}
-		subscribers[symbol][client] = exists
+	if isExist == false {
+		historyTrade[msg.Symbol] = []context.TradeChanel{*msg}
+		return
+	}
+
+	historyTrade[msg.Symbol] = append(historyTrade[msg.Symbol], *msg)
+	if len(history) > context.Config.Storage.Trade_history_limit {
+		historyTrade[msg.Symbol] = historyTrade[msg.Symbol][1:]
 	}
 }
 
-func unsubscribe(client *Client, message SubMessage) {
-	subscribersMutex.Lock()
-	defer subscribersMutex.Unlock()
+func getHistory(symbol string, limit int) []context.TradeChanel {
+	history, isExist := historyTrade[symbol]
+	slice := len(history) - limit
+
+	if isExist == false {
+		return []context.TradeChanel{}
+	}
+
+	if slice < 0 {
+		slice = len(history)
+	}
+
+	return history[:slice]
+}
+
+func sendSnapshot(client *Client, symbols []string, limit *int) {
+	var l int
+	var snapshot TradeOrderList
+	snapshot = make(TradeOrderList)
+
+	if limit == nil {
+		l = 50
+	} else {
+		l = *limit
+	}
+
+	for _, symbol := range symbols {
+		history := getHistory(symbol, l)
+		tradeOrders := make([]TradeOrder, len(history))
+
+		for i, trade := range history {
+			tradeOrders[i] = TradeOrder{
+				T: trade.Timestamp,
+				I: trade.Id,
+				P: trade.Price,
+				Q: trade.Quantity,
+				S: trade.Side,
+			}
+		}
+
+		snapshot[symbol] = tradeOrders
+	}
+
+	message := TradeMessage{
+		Ch:       "trades",
+		Snapshot: &snapshot,
+	}
+
+	jsonData, err := json.Marshal(message)
+	if err != nil {
+		log.Error("Error serializing message trade chanel", err)
+		return
+	}
+
+	client.Mutex.Lock()
+	defer client.Mutex.Lock()
+	client.Conn.WriteMessage(websocket.TextMessage, jsonData)
+}
+
+func tradeSubscribe(client *Client, message SubMessage) {
+	tradeSubscribersMutex.Lock()
+	defer tradeSubscribersMutex.Unlock()
 
 	for _, symbol := range message.Params.Symbols {
-		for s := range subscribers {
+		if _, ok := tradeSubscribers[symbol]; !ok {
+			tradeSubscribers[symbol] = make(map[*Client]struct{})
+		}
+		tradeSubscribers[symbol][client] = tradeExists
+	}
+}
+
+func tradeUnsubscribe(client *Client, message SubMessage) {
+	tradeSubscribersMutex.Lock()
+	defer tradeSubscribersMutex.Unlock()
+
+	for _, symbol := range message.Params.Symbols {
+		for s := range tradeSubscribers {
 			if symbol == s {
-				delete(subscribers[symbol], client)
+				delete(tradeSubscribers[symbol], client)
 			}
 		}
 	}
 }
 
 func TradeDropSubscriber(client *Client) {
-	subscribersMutex.Lock()
-	defer subscribersMutex.Unlock()
+	tradeSubscribersMutex.Lock()
+	defer tradeSubscribersMutex.Unlock()
 
-	for symbol := range subscribers {
-		delete(subscribers[symbol], client)
+	for symbol := range tradeSubscribers {
+		delete(tradeSubscribers[symbol], client)
 	}
 }

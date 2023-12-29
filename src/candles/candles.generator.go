@@ -1,7 +1,6 @@
 package candles
 
 import (
-	"exex-chart/src/config"
 	"exex-chart/src/context"
 	"fmt"
 	"os"
@@ -12,17 +11,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var conf config.Config
 var allCandles = make(map[string]map[string]context.CandleCanel)
 var lastPrice = make(map[string]float64)
 
 func InitCron() {
 	log.Info("INIT CANDLE GENERATOR")
 
-	conf = config.GetConfig()
-	c := cron.New(cron.WithSeconds(), cron.WithLogger(cron.VerbosePrintfLogger(log.StandardLogger())))
+	c := cron.New(cron.WithSeconds()) //, cron.WithLogger(cron.VerbosePrintfLogger(log.StandardLogger()))
 
-	for _, period := range conf.Candle.Periods {
+	for _, period := range context.Config.Candle.Periods {
 		period := period
 		spec, err := periodToCronSpec(period)
 
@@ -32,7 +29,7 @@ func InitCron() {
 		}
 
 		_, err = c.AddFunc(spec, func() {
-			cronJob(period, conf.Symbols)
+			cronJob(period, context.Config.Symbols)
 		})
 
 		if err != nil {
@@ -107,8 +104,10 @@ func cronJob(period string, sumbols []string) {
 }
 
 func fire(candle *context.CandleCanel) {
-	log.Info("Fire candle", candle)
-	// context.BroadcastCandleRsi <- candle
+	_, isExist := context.Config.Candle.Rsi_events[candle.Period]
+	if isExist {
+		context.BroadcastCandleRsi <- *candle
+	}
 }
 
 func calculateTime(date time.Time, period string) (ResCalculateTime, error) {
@@ -188,7 +187,7 @@ func processTrade(trade *context.TradeChanel) {
 
 	lastPrice[trade.Symbol] = price
 
-	for _, period := range conf.Candle.Periods {
+	for _, period := range context.Config.Candle.Periods {
 		dates, err := calculateTime(tradeTime, period)
 		candle, isExCandle := allCandles[period][trade.Symbol]
 

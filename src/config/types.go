@@ -19,15 +19,18 @@ type Broker struct {
 }
 
 type Candle struct {
-	Periods []string `json:"periods"`
+	Periods    []string        `json:"periods"`
+	Rsi_events map[string]bool `json:"rsi_events"`
 }
 
 type Rsi struct {
-	Period        int8   `json:"period"`
-	Interval      string `json:"interval"`
-	MovingAverage string `json:"movingAverage"`
-	FillBlanks    bool   `json:"fillBlanks"`
-	Storage       bool   `json:"storage"`
+	Period     string `json:"period"`
+	Interval   int    `json:"interval"`
+	FillBlanks bool   `json:"fillBlanks"`
+}
+
+type Storage struct {
+	Trade_history_limit int `json:"trade_history_limit"`
 }
 
 type Config struct {
@@ -35,4 +38,5 @@ type Config struct {
 	Symbols []string `json:"symbols"`
 	Candle  Candle   `json:"candle"`
 	Rsi     []Rsi    `json:"rsi"`
+	Storage Storage  `json:"storage"`
 }

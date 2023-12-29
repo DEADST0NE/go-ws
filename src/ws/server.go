@@ -30,7 +30,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go reader(ws)
+	reader(ws)
 }
 
 func reader(conn *websocket.Conn) {
@@ -45,6 +45,14 @@ func reader(conn *websocket.Conn) {
 			break
 		}
 
+		if string(msg) == "ping" {
+			SendMessage(conn, "pong")
+			continue
+		}
+		if string(msg) == "pong" {
+			SendMessage(conn, "ping")
+		}
+
 		var message SubMessage
 		err = json.Unmarshal(msg, &message)
 
@@ -57,6 +65,8 @@ func reader(conn *websocket.Conn) {
 		switch message.Ch {
 		case "trades":
 			TradeHandler(&client, message)
+		case "rsi":
+			RsiHandler(&client, message)
 		default:
 			SendMessage(conn, "Chanal not implemented")
 		}

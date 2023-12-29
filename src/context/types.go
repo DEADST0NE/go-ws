@@ -21,3 +21,9 @@ type CandleCanel struct {
 	EndTime   time.Time `json:"endTime"`
 	Period    string    `json:"period"`
 }
+
+type RsiCanel struct {
+	Symbol string  `json:"symbol"`
+	Period string  `json:"period"`
+	Rsi    float64 `json:"rsi"`
+}

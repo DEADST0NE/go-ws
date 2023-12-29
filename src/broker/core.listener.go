@@ -2,7 +2,6 @@ package broker
 
 import (
 	"encoding/json"
-	"exex-chart/src/config"
 	"exex-chart/src/context"
 	"net/url"
 	"os"
@@ -15,12 +14,11 @@ import (
 )
 
 func coreConnectToServer() (*websocket.Conn, error) {
-	config := config.GetConfig()
 
 	url := url.URL{
-		Scheme: config.Broker.Core.Scheme,
-		Path:   config.Broker.Core.Path,
-		Host:   config.Broker.Core.Host,
+		Scheme: context.Config.Broker.Core.Scheme,
+		Path:   context.Config.Broker.Core.Path,
+		Host:   context.Config.Broker.Core.Host,
 	}
 	log.Info("Сonnecting to CORE ws url:", url.String())
 
@@ -33,7 +31,7 @@ func coreConnectToServer() (*websocket.Conn, error) {
 	subMessage := CoreSubMessage{
 		Method: "subscribeTrades",
 		Options: CoreOptions{
-			Env: config.Broker.Core.Env,
+			Env: context.Config.Broker.Core.Env,
 		},
 	}
 

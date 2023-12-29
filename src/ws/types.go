@@ -1,9 +1,14 @@
 package ws
 
-import "github.com/gorilla/websocket"
+import (
+	"sync"
+
+	"github.com/gorilla/websocket"
+)
 
 type Params struct {
 	Symbols []string `json:"symbols"`
+	Limit   *int     `json:"limit"`
 }
 
 type SubMessage struct {
@@ -13,8 +18,9 @@ type SubMessage struct {
 }
 
 type Client struct {
-	ID   string
-	Conn *websocket.Conn
+	ID    string
+	Conn  *websocket.Conn
+	Mutex sync.Mutex
 }
 
 type TradeOrder struct {
@@ -31,4 +37,11 @@ type TradeMessage struct {
 	Ch       string          `json:"ch"`
 	Update   *TradeOrderList `json:"update,omitempty"`
 	Snapshot *TradeOrderList `json:"snapshot,omitempty"`
+}
+
+type RsiOrderList map[string]float64
+
+type RsiMessage struct {
+	Channel string       `json:"channel"`
+	Data    RsiOrderList `json:"data"`
 }
