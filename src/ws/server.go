@@ -11,7 +11,7 @@ import (
 
 func WsServer() {
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	log.Fatal(http.ListenAndServe(":3004", nil))
 }
 
 var upgrader = websocket.Upgrader{
