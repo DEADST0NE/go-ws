@@ -10,10 +10,12 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o build main.go
 
-FROM alpine:latest  
-RUN apk --no-cache add ca-certificates
+FROM ubuntu:latest  
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apk add --no-cache bash
+RUN apt-get update && apt-get install -y bash
 COPY ./docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
