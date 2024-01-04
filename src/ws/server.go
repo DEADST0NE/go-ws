@@ -2,6 +2,8 @@ package ws
 
 import (
 	"encoding/json"
+	"exex-chart/src/_core/context"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -11,7 +13,10 @@ import (
 
 func WsServer() {
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":3004", nil))
+
+	port := context.Config.Ws.Port
+	addr := fmt.Sprintf(":%d", port)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
 
 var upgrader = websocket.Upgrader{

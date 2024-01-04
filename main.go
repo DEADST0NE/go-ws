@@ -1,18 +1,24 @@
 package main
 
 import (
+	"exex-chart/src/_core/context"
+	"exex-chart/src/_core/redis"
 	"exex-chart/src/broker"
 	"exex-chart/src/candles"
-	"exex-chart/src/context"
 	"exex-chart/src/rsi"
 	"exex-chart/src/ws"
-	"fmt"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	fmt.Println("START PROJECT")
+	log.Info("START PROJECT")
+
 	// CONTEXT
 	context.Init()
+
+	// REDIS
+	redis.Init()
 
 	// DATASOURCE
 	go broker.SSListener()

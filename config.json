@@ -41,17 +41,22 @@
             "M15"
         ],
         "rsi_events": {
-            "M15": true
+            "M5": true
         }
     },
     "rsi": [
         {
-            "period": "M15",
+            "period": "M5",
             "interval": 14,
             "fillBlanks": true
         }
     ],
     "storage": {
         "trade_history_limit": 2000
+    },
+    "ws": {
+        "default": {
+            "rsi": "M5"
+        }
     }
 }

@@ -1,6 +1,6 @@
 package context
 
-import "exex-chart/src/config"
+import "exex-chart/src/_core/config"
 
 // TRADE
 var BroadcastRsiWS = make(chan *RsiCanel, 1000)

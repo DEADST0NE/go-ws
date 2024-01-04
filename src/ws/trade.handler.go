@@ -2,7 +2,7 @@ package ws
 
 import (
 	"encoding/json"
-	"exex-chart/src/context"
+	"exex-chart/src/_core/context"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -19,7 +19,7 @@ func TradeHandler(client *Client, message SubMessage) {
 	switch message.Method {
 	case "subscribe":
 		tradeSubscribe(client, message)
-		sendSnapshot(client, message.Params.Symbols, message.Params.Limit)
+		tradeSendSnapshot(client, message.Params.Symbols, message.Params.Limit)
 	case "unsubscribe":
 		tradeUnsubscribe(client, message)
 	default:
@@ -90,7 +90,7 @@ func getHistory(symbol string, limit int) []context.TradeChanel {
 	return history[:slice]
 }
 
-func sendSnapshot(client *Client, symbols []string, limit *int) {
+func tradeSendSnapshot(client *Client, symbols []string, limit *int) {
 	var l int
 	var snapshot TradeOrderList
 	snapshot = make(TradeOrderList)

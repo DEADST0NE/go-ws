@@ -33,7 +33,22 @@ type Storage struct {
 	Trade_history_limit int `json:"trade_history_limit"`
 }
 
+type Redis struct {
+	Host string `json:"host"`
+}
+
+type WsDefault struct {
+	Rsi string `json:"rsi"`
+}
+
+type Ws struct {
+	Port    int       `json:"port"`
+	Default WsDefault `json:"default"`
+}
+
 type Config struct {
+	Ws      Ws       `json:"ws"`
+	Redis   Redis    `json:"redis"`
 	Broker  Broker   `json:"broker"`
 	Symbols []string `json:"symbols"`
 	Candle  Candle   `json:"candle"`

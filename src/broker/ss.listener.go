@@ -2,7 +2,7 @@ package broker
 
 import (
 	"encoding/json"
-	"exex-chart/src/context"
+	"exex-chart/src/_core/context"
 	"net/url"
 	"os"
 	"time"
@@ -18,7 +18,7 @@ func ssConnectToServer() (*websocket.Conn, error) {
 		Path:   context.Config.Broker.Ss.Path,
 		Host:   context.Config.Broker.Ss.Host,
 	}
-	log.Info("Сonnecting to SS ws url:", url.String())
+	log.Info("СONNECTING TO SS WS URL: ", url.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 

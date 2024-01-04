@@ -2,13 +2,13 @@ import ws from 'k6/ws';
 import {check} from 'k6';
 
 export const options = {
-  vus: 4000,
+  vus: 10000,
   duration: '30s',
   noVUConnectionReuse: true,
 };
 
 export default function() {
-  const url = 'ws://127.0.0.1:3000';
+  const url = 'ws://49.13.71.4:3004';
   const res = ws.connect(url, {}, function(socket) {
     socket.on('open', () => {
       console.log('connected');

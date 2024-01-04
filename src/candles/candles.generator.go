@@ -1,7 +1,7 @@
 package candles
 
 import (
-	"exex-chart/src/context"
+	"exex-chart/src/_core/context"
 	"fmt"
 	"os"
 	"strconv"

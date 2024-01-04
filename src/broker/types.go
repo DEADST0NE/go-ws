@@ -20,9 +20,9 @@ type CoreSubMessage struct {
 }
 
 type CoreMsgTrades struct {
-	requestId   string  `json:"requestId"`
-	clientId    string  `json:"clientId"`
-	environment string  `json:"environment"`
+	RequestId   string  `json:"requestId"`
+	ClientId    string  `json:"clientId"`
+	Environment string  `json:"environment"`
 	Timestamp   string  `json:"timestamp"`
 	Price       float64 `json:"price"`
 	Quantity    int8    `json:"quantity"`

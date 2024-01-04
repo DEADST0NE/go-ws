@@ -2,7 +2,7 @@ package broker
 
 import (
 	"encoding/json"
-	"exex-chart/src/context"
+	"exex-chart/src/_core/context"
 	"net/url"
 	"os"
 	"strconv"
@@ -20,7 +20,7 @@ func coreConnectToServer() (*websocket.Conn, error) {
 		Path:   context.Config.Broker.Core.Path,
 		Host:   context.Config.Broker.Core.Host,
 	}
-	log.Info("Сonnecting to CORE ws url:", url.String())
+	log.Info("СONNECTING TO CORE WS URL: ", url.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 
@@ -101,7 +101,7 @@ func coreListenAndServe(c *websocket.Conn) {
 		if err != nil {
 			log.Error("Error parse message CORE ws:", err)
 		} else {
-			if message.requestId == "" {
+			if message.RequestId == "" {
 				continue
 			}
 
