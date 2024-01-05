@@ -1,7 +1,7 @@
-version: '3.8'
+version: "3.8"
 
 services:
-### GO APP #########################################
+  ### GO APP #########################################
   app:
     container_name: go_app
     build:

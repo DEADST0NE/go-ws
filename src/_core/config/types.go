@@ -46,6 +46,14 @@ type Ws struct {
 	Default WsDefault `json:"default"`
 }
 
+type Pg struct {
+	Host string `json:"host"`
+}
+
+type Api struct {
+	Port string `json:"port"`
+}
+
 type Config struct {
 	Ws      Ws       `json:"ws"`
 	Redis   Redis    `json:"redis"`
@@ -54,4 +62,6 @@ type Config struct {
 	Candle  Candle   `json:"candle"`
 	Rsi     []Rsi    `json:"rsi"`
 	Storage Storage  `json:"storage"`
+	Pg      Pg       `json:"pg"`
+	Api     Api      `json:api`
 }

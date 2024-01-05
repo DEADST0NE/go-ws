@@ -104,10 +104,12 @@ func cronJob(period string, sumbols []string) {
 }
 
 func fire(candle *context.CandleCanel) {
-	_, isExist := context.Config.Candle.Rsi_events[candle.Period]
-	if isExist {
+	rsiStatus, isExist := context.Config.Candle.Rsi_events[candle.Period]
+	if isExist && rsiStatus {
 		context.BroadcastCandleRsi <- *candle
 	}
+
+	context.BroadcastCandleSave <- candle
 }
 
 func calculateTime(date time.Time, period string) (ResCalculateTime, error) {

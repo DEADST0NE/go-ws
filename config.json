@@ -8,8 +8,7 @@
         "core": {
             "scheme": "ws",
             "path": "/",
-            "host": "trading-backup.exex.com:3000",
-            "env": "stage"
+            "host": "trading-backup.exex.com:3000"
         }
     },
     "symbols": [

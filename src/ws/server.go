@@ -16,6 +16,9 @@ func WsServer() {
 
 	port := context.Config.Ws.Port
 	addr := fmt.Sprintf(":%d", port)
+
+	log.Println("STARTING WS SERVER ON :", port)
+
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
 

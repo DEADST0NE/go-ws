@@ -55,16 +55,35 @@ func updateConfigFromEnv(config *Config) error {
 	}
 	config.Redis.Host = redisHost
 
-	wsPort, exists := os.LookupEnv("APP_WS_PORT")
+	wsPortStr, exists := os.LookupEnv("APP_WS_PORT")
 	if !exists {
 		return fmt.Errorf("APP_WS_PORT not set in the environment")
 	}
 
-	port, err := strconv.Atoi(wsPort)
+	wsPort, err := strconv.Atoi(wsPortStr)
 	if err != nil {
 		return fmt.Errorf("error converting APP_WS_PORT to integer: %w", err)
 	}
-	config.Ws.Port = port
+	config.Ws.Port = wsPort
+
+	pgHost, exists := os.LookupEnv("APP_PG_HOST")
+	if !exists {
+		return fmt.Errorf("APP_PG_HOST not set in the environment")
+	}
+	config.Pg.Host = pgHost
+
+	brokerCoreEnv, exists := os.LookupEnv("APP_BROKER_CORE_ENV")
+	if !exists {
+		return fmt.Errorf("APP_BROKER_CORE_ENV not set in the environment")
+	}
+	config.Broker.Core.Env = brokerCoreEnv
+
+	apiPort, exists := os.LookupEnv("APP_API_PORT")
+	if !exists {
+		return fmt.Errorf("APP_API_PORT not set in the environment")
+	}
+
+	config.Api.Port = apiPort
 
 	return nil
 }
