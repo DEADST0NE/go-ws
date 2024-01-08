@@ -15,7 +15,7 @@ var tradeSubscribers = make(map[string]map[*Client]struct{})
 
 var historyTrade = make(map[string][]context.TradeChanel)
 
-func TradeHandler(client *Client, message SubMessage) {
+func TradeHandler(client *Client, message HandlerParams) {
 	switch message.Method {
 	case "subscribe":
 		tradeSendSnapshot(client, message.Params.Symbols, message.Params.Limit)
@@ -134,7 +134,7 @@ func tradeSendSnapshot(client *Client, symbols []string, limit *int) {
 	client.Conn.WriteMessage(websocket.TextMessage, jsonData)
 }
 
-func tradeSubscribe(client *Client, message SubMessage) {
+func tradeSubscribe(client *Client, message HandlerParams) {
 	tradeSubscribersMutex.Lock()
 	defer tradeSubscribersMutex.Unlock()
 
@@ -146,7 +146,7 @@ func tradeSubscribe(client *Client, message SubMessage) {
 	}
 }
 
-func tradeUnsubscribe(client *Client, message SubMessage) {
+func tradeUnsubscribe(client *Client, message HandlerParams) {
 	tradeSubscribersMutex.Lock()
 	defer tradeSubscribersMutex.Unlock()
 

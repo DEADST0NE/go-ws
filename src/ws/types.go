@@ -12,6 +12,14 @@ type Params struct {
 }
 
 type SubMessage struct {
+	Method  string  `json:"method"`
+	Ch      *string `json:"ch,omitempty"`
+	Channel *string `json:"channel,omitempty"`
+	Params  *Params `json:"params,omitempty"`
+	Options *Params `json:"options,omitempty"`
+}
+
+type HandlerParams struct {
 	Method string `json:"method"`
 	Ch     string `json:"ch"`
 	Params Params `json:"params"`

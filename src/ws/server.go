@@ -70,11 +70,25 @@ func reader(conn *websocket.Conn) {
 			continue
 		}
 
-		switch message.Ch {
+		var hendlerParams HandlerParams
+
+		if message.Ch != nil {
+			hendlerParams.Ch = *message.Ch
+			hendlerParams.Method = message.Method
+			hendlerParams.Params = *message.Params
+		} else if message.Channel != nil {
+			hendlerParams.Ch = *message.Channel
+			hendlerParams.Method = message.Method
+			hendlerParams.Params = *message.Options
+		} else {
+			SendMessage(conn, "Chanal not implemented")
+		}
+
+		switch hendlerParams.Ch {
 		case "trades":
-			TradeHandler(&client, message)
+			TradeHandler(&client, hendlerParams)
 		case "rsi":
-			RsiHandler(&client, message)
+			RsiHandler(&client, hendlerParams)
 		default:
 			SendMessage(conn, "Chanal not implemented")
 		}

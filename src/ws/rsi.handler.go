@@ -17,7 +17,7 @@ var rsiSubscribersMutex sync.Mutex
 var rsiSubscribers = make(map[string]map[*Client]struct{})
 var lastRsi = make(map[string]float64)
 
-func RsiHandler(client *Client, message SubMessage) {
+func RsiHandler(client *Client, message HandlerParams) {
 	switch message.Method {
 	case "subscribe":
 		rsiSubscribe(client, message)
@@ -90,7 +90,7 @@ func getKey(period string, symbol string) string {
 	return "RSI:" + symbol + ":" + period
 }
 
-func rsiSubscribe(client *Client, message SubMessage) {
+func rsiSubscribe(client *Client, message HandlerParams) {
 	rsiSubscribersMutex.Lock()
 	defer rsiSubscribersMutex.Unlock()
 
@@ -143,7 +143,7 @@ func rsiSendSnapshot(client *Client, period string, symbols []string) {
 	client.Conn.WriteMessage(websocket.TextMessage, jsonData)
 }
 
-func rsiUnsubscribe(client *Client, message SubMessage) {
+func rsiUnsubscribe(client *Client, message HandlerParams) {
 	rsiSubscribersMutex.Lock()
 	defer rsiSubscribersMutex.Unlock()
 
