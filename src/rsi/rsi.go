@@ -41,7 +41,7 @@ func rsiReplacelast(rsi *Rsi, value float64) *float64 {
 
 func rsiRecalculate(rsi *Rsi) *float64 {
 	if !rsi.Filled {
-		if len(rsi.Values) < 1+rsi.Interval {
+		if len(rsi.Values) < rsi.Interval+1 {
 			return nil
 		}
 
@@ -71,7 +71,7 @@ func rsiRecalculate(rsi *Rsi) *float64 {
 		rsi.Values = rsi.Values[rsi.Interval-1:]
 	}
 
-	if rsi.Usmma == nil || rsi.Dsmma == nil {
+	if rsi.Usmma == nil || rsi.Dsmma == nil || *rsi.Usmma == 0 || *rsi.Dsmma == 0 {
 		return nil
 	}
 
@@ -105,6 +105,8 @@ func rsiRecalculate(rsi *Rsi) *float64 {
 
 	rsi.Values = rsi.Values[len(rsi.Values)-2:]
 	res := 100 - 100/(1+rs)
+	rsi.rsi = &res
+
 	return &res
 }
 

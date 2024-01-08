@@ -15,7 +15,6 @@ var allRsi = make(map[string]map[string]Rsi)
 var allLastCandle = make(map[string]map[string]context.CandleCanel)
 
 func InitNewCandleChanal() {
-
 	for _, generator := range context.Config.Rsi {
 		for _, symbol := range context.Config.Symbols {
 			if allRsi[generator.Period] == nil {
@@ -78,13 +77,16 @@ func addCandle(rsi *Rsi, candle *context.CandleCanel) bool {
 }
 
 func sendChanelRsi(rsi *Rsi) {
-	value := rsi.Values[len(rsi.Values)-1]
+	value := *rsi.rsi
 
 	data := context.RsiCanel{
 		Symbol: rsi.Symbol,
 		Period: rsi.Period,
 		Rsi:    value,
 	}
+
+	log.Info("RSI", data)
+
 	context.BroadcastRsiWS <- &data
 }
 func fillBlanks(currentCandle, previousCandle *context.CandleCanel) (*context.CandleCanel, error) {

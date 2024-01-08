@@ -9,4 +9,5 @@ type Rsi struct {
 	Period     string
 	Interval   int
 	FillBlanks bool
+	rsi        *float64
 }
