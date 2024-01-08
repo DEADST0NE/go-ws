@@ -18,8 +18,8 @@ var historyTrade = make(map[string][]context.TradeChanel)
 func TradeHandler(client *Client, message SubMessage) {
 	switch message.Method {
 	case "subscribe":
-		tradeSubscribe(client, message)
 		tradeSendSnapshot(client, message.Params.Symbols, message.Params.Limit)
+		tradeSubscribe(client, message)
 	case "unsubscribe":
 		tradeUnsubscribe(client, message)
 	default:
@@ -130,7 +130,7 @@ func tradeSendSnapshot(client *Client, symbols []string, limit *int) {
 	}
 
 	client.Mutex.Lock()
-	defer client.Mutex.Lock()
+	defer client.Mutex.Unlock()
 	client.Conn.WriteMessage(websocket.TextMessage, jsonData)
 }
 
