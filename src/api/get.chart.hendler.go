@@ -14,6 +14,8 @@ var defaultPeriod = "S15"
 const dateTimeFormat = "2006-01-02 15:04:05"
 
 func getChartHendler(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method is not supported.", http.StatusNotFound)
 		return
