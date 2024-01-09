@@ -62,7 +62,7 @@ func SendTradeUpdate() {
 }
 
 func saveTrade(msg *context.TradeChanel) {
-	history, isExist := historyTrade[msg.Symbol]
+	_, isExist := historyTrade[msg.Symbol]
 
 	if isExist == false {
 		historyTrade[msg.Symbol] = []context.TradeChanel{*msg}
@@ -70,7 +70,7 @@ func saveTrade(msg *context.TradeChanel) {
 	}
 
 	historyTrade[msg.Symbol] = append(historyTrade[msg.Symbol], *msg)
-	if len(history) > context.Config.Storage.Trade_history_limit {
+	if len(historyTrade[msg.Symbol]) > context.Config.Storage.Trade_history_limit {
 		historyTrade[msg.Symbol] = historyTrade[msg.Symbol][1:]
 	}
 }
@@ -82,12 +82,13 @@ func getHistory(symbol string, limit int) []context.TradeChanel {
 	if isExist == false {
 		return []context.TradeChanel{}
 	}
-
+	// 6, 2, 8
+	log.Info(slice, limit, len(history))
 	if slice < 0 {
-		slice = len(history)
+		slice = 0
 	}
 
-	return history[:slice]
+	return history[slice:]
 }
 
 func tradeSendSnapshot(client *Client, symbols []string, limit *int) {
