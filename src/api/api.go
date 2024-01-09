@@ -10,7 +10,7 @@ import (
 func InitApi() {
 	port := ":" + context.Config.Api.Port
 	http.HandleFunc("/status", statusHandler)
-	http.HandleFunc(routes.API.V1.GET_CHART, getChartHendler)
+	http.HandleFunc(routes.API.V1.GET_CHART, enableCors(getChartHendler))
 
 	log.Println("STARTING REST API SERVER ON " + port)
 	err := http.ListenAndServe(port, nil)
