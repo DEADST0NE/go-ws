@@ -5,6 +5,7 @@ import (
 	"exex-chart/src/_core/context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -84,12 +85,11 @@ func reader(conn *websocket.Conn) {
 			SendMessage(conn, "Chanal not implemented")
 		}
 
-		switch hendlerParams.Ch {
-		case "trades":
+		if hendlerParams.Ch == "trades" {
 			TradeHandler(&client, hendlerParams)
-		case "rsi":
+		} else if strings.HasPrefix(hendlerParams.Ch, "rsi") {
 			RsiHandler(&client, hendlerParams)
-		default:
+		} else {
 			SendMessage(conn, "Chanal not implemented")
 		}
 	}
