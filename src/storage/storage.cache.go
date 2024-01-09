@@ -13,11 +13,23 @@ func InitWatchCandleSave() {
 	log.Info("INIT WATCH SAVE CANDLE")
 	for {
 		msg := <-context.BroadcastCandleSave
-		SetCandleCache(msg)
+
+		сandle := context.CandleCanel{
+			Open:      msg.Open,
+			High:      msg.High,
+			Low:       msg.Low,
+			Close:     msg.Close,
+			Symbol:    msg.Symbol,
+			StartTime: msg.StartTime,
+			EndTime:   msg.EndTime,
+			Period:    msg.Period,
+		}
+
+		SetCandleCache(сandle)
 	}
 }
 
-func SetCandleCache(candle *context.CandleCanel) {
+func SetCandleCache(candle context.CandleCanel) {
 	key := GetChandleCacheKey(candle.Symbol, candle.Period, &candle.StartTime)
 
 	candleJSON, errParse := json.Marshal(candle)
