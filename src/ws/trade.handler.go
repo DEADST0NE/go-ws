@@ -82,8 +82,7 @@ func getHistory(symbol string, limit int) []context.TradeChanel {
 	if isExist == false {
 		return []context.TradeChanel{}
 	}
-	// 6, 2, 8
-	log.Info(slice, limit, len(history))
+
 	if slice < 0 {
 		slice = 0
 	}
