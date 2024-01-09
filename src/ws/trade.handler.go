@@ -91,15 +91,15 @@ func getHistory(symbol string, limit int) []context.TradeChanel {
 }
 
 func tradeSendSnapshot(client *Client, symbols []string, limit *int) {
-	var l int
+	var l int = 500
 	var snapshot TradeOrderList
 	snapshot = make(TradeOrderList)
 
-	if limit == nil {
-		l = 50
-	} else {
-		l = *limit
-	}
+	// if limit == nil {
+	// 	l = 50
+	// } else {
+	// 	l = *limit
+	// }
 
 	for _, symbol := range symbols {
 		history := getHistory(symbol, l)
