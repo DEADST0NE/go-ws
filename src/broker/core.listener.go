@@ -61,7 +61,7 @@ func coreParseTrade(data CoreMsgTrades) (*context.TradeChanel, error) {
 		return nil, err
 	}
 
-	timestamp := t.Unix()
+	timestamp := t.UnixMilli()
 
 	id, err := strconv.ParseInt(data.Id, 10, 64)
 
