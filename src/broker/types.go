@@ -25,7 +25,7 @@ type CoreMsgTrades struct {
 	Environment string  `json:"environment"`
 	Timestamp   string  `json:"timestamp"`
 	Price       float64 `json:"price"`
-	Quantity    int8    `json:"quantity"`
+	Quantity    float64 `json:"quantity"`
 	Symbol      string  `json:"symbol"`
 	Side        string  `json:"side"`
 	order_id    string

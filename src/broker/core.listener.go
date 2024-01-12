@@ -70,7 +70,7 @@ func coreParseTrade(data CoreMsgTrades) (*context.TradeChanel, error) {
 		return nil, err
 	}
 
-	quantity := strconv.Itoa(int(data.Quantity))
+	quantity := strconv.FormatFloat(data.Quantity, 'f', 6, 64)
 	price := strconv.FormatFloat(data.Price, 'f', 6, 64)
 
 	msg := context.TradeChanel{
@@ -94,7 +94,6 @@ func coreListenAndServe(c *websocket.Conn) {
 			c.Close()
 			return
 		}
-
 		var message CoreMsgTrades
 		err = json.Unmarshal(msg, &message)
 
