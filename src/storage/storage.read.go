@@ -5,23 +5,24 @@ import (
 	"exex-chart/src/_core/context"
 	"exex-chart/src/_core/pg"
 	"fmt"
+	"sort"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func FindCandles(params ParamsFindCandles) (*[]CandleOrder, error) {
+func FindCandles(params ParamsFindCandles) ([]CandleOrder, error) {
 	tenMinutesAgo := time.Now().Add(-10 * time.Minute)
 	tableName, err := CandleTable(params.Symbol, params.Period)
 
 	if err != nil {
-		return nil, err
+		return []CandleOrder{}, err
 	}
 
 	db, err := pg.Connect()
 
 	if err != nil {
-		return nil, err
+		return []CandleOrder{}, err
 	}
 
 	defer db.Close()
@@ -60,7 +61,7 @@ func FindCandles(params ParamsFindCandles) (*[]CandleOrder, error) {
 			}
 		} else {
 			log.Errorf("ERROR GET CANDLE FROM REDIS: %v\n", err)
-			return nil, err
+			return []CandleOrder{}, err
 		}
 	}
 
@@ -94,11 +95,11 @@ func FindCandles(params ParamsFindCandles) (*[]CandleOrder, error) {
 		log.Errorf("ERROR READING ROWS: %v", err)
 	}
 
-	// sort.Slice(candles, func(i, j int) bool {
-	// 	return candles[i].Time < candles[j].Time
-	// })
+	sort.Slice(candles, func(i, j int) bool {
+		return candles[i].Time < candles[j].Time
+	})
 
-	return &candles, nil
+	return candles, nil
 }
 
 type CandleOrder struct {

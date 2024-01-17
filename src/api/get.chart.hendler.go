@@ -62,8 +62,8 @@ func getChartHendler(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		if candles != nil && len(*candles) > 0 {
-			res[symbol] = *candles
+		if candles != nil && len(candles) > 0 {
+			res[symbol] = candles
 		} else {
 			res[symbol] = make([]storage.CandleOrder, 0)
 		}
