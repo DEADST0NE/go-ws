@@ -96,7 +96,7 @@ func FindCandles(params ParamsFindCandles) ([]CandleOrder, error) {
 	}
 
 	sort.Slice(candles, func(i, j int) bool {
-		return candles[i].Time < candles[j].Time
+		return candles[i].Time > candles[j].Time
 	})
 
 	return candles, nil
