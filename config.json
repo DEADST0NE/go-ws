@@ -51,7 +51,7 @@
         }
     ],
     "storage": {
-        "trade_history_limit": 2000
+        "trade_history_limit": 3500
     },
     "ws": {
         "default": {
